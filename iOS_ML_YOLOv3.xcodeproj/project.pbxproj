@@ -9,13 +9,14 @@
 /* Begin PBXBuildFile section */
 		DBB13996254F58E60097CCBE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB13995254F58E60097CCBE /* AppDelegate.swift */; };
 		DBB13998254F58E60097CCBE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB13997254F58E60097CCBE /* SceneDelegate.swift */; };
-		DBB1399A254F58E60097CCBE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB13999254F58E60097CCBE /* ViewController.swift */; };
 		DBB1399D254F58E60097CCBE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DBB1399B254F58E60097CCBE /* Main.storyboard */; };
 		DBB139A0254F58E60097CCBE /* iOS_ML_YOLOv3.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DBB1399E254F58E60097CCBE /* iOS_ML_YOLOv3.xcdatamodeld */; };
 		DBB139A2254F58E80097CCBE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DBB139A1254F58E80097CCBE /* Assets.xcassets */; };
 		DBB139A5254F58E80097CCBE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DBB139A3254F58E80097CCBE /* LaunchScreen.storyboard */; };
 		DBB139B0254F58E80097CCBE /* iOS_ML_YOLOv3Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB139AF254F58E80097CCBE /* iOS_ML_YOLOv3Tests.swift */; };
 		DBB139BB254F58E80097CCBE /* iOS_ML_YOLOv3UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB139BA254F58E80097CCBE /* iOS_ML_YOLOv3UITests.swift */; };
+		DBB139D2254F5A5E0097CCBE /* SnapsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB139D1254F5A5E0097CCBE /* SnapsTableViewController.swift */; };
+		DBB139D7254F5E140097CCBE /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB139D6254F5E140097CCBE /* CameraViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,7 +40,6 @@
 		DBB13992254F58E60097CCBE /* iOS_ML_YOLOv3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOS_ML_YOLOv3.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBB13995254F58E60097CCBE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DBB13997254F58E60097CCBE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		DBB13999254F58E60097CCBE /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		DBB1399C254F58E60097CCBE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		DBB1399F254F58E60097CCBE /* iOS_ML_YOLOv3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = iOS_ML_YOLOv3.xcdatamodel; sourceTree = "<group>"; };
 		DBB139A1254F58E80097CCBE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -51,6 +51,8 @@
 		DBB139B6254F58E80097CCBE /* iOS_ML_YOLOv3UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iOS_ML_YOLOv3UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBB139BA254F58E80097CCBE /* iOS_ML_YOLOv3UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOS_ML_YOLOv3UITests.swift; sourceTree = "<group>"; };
 		DBB139BC254F58E80097CCBE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DBB139D1254F5A5E0097CCBE /* SnapsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapsTableViewController.swift; sourceTree = "<group>"; };
+		DBB139D6254F5E140097CCBE /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,8 +105,9 @@
 			children = (
 				DBB13995254F58E60097CCBE /* AppDelegate.swift */,
 				DBB13997254F58E60097CCBE /* SceneDelegate.swift */,
-				DBB13999254F58E60097CCBE /* ViewController.swift */,
+				DBB139D1254F5A5E0097CCBE /* SnapsTableViewController.swift */,
 				DBB1399B254F58E60097CCBE /* Main.storyboard */,
+				DBB139D6254F5E140097CCBE /* CameraViewController.swift */,
 				DBB139A1254F58E80097CCBE /* Assets.xcassets */,
 				DBB139A3254F58E80097CCBE /* LaunchScreen.storyboard */,
 				DBB139A6254F58E80097CCBE /* Info.plist */,
@@ -262,7 +265,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				DBB139A0254F58E60097CCBE /* iOS_ML_YOLOv3.xcdatamodeld in Sources */,
-				DBB1399A254F58E60097CCBE /* ViewController.swift in Sources */,
+				DBB139D7254F5E140097CCBE /* CameraViewController.swift in Sources */,
+				DBB139D2254F5A5E0097CCBE /* SnapsTableViewController.swift in Sources */,
 				DBB13996254F58E60097CCBE /* AppDelegate.swift in Sources */,
 				DBB13998254F58E60097CCBE /* SceneDelegate.swift in Sources */,
 			);
