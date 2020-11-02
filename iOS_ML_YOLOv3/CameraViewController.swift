@@ -23,6 +23,10 @@ class CameraViewController: UIViewController {
     // Do any additional setup after loading the view.
   }
   
+  deinit {
+    captureSession.stopRunning()
+  }
+  
   //MARK: - View Functions
   func startVideoCamera() {
     guard let captureDevice = AVCaptureDevice.default(for: AVMediaType.video) else {
