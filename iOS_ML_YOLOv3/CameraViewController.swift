@@ -20,10 +20,10 @@ class CameraViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     self.startVideoCamera()
-    // Do any additional setup after loading the view.
   }
   
   deinit {
+    //Stop using camera after dismissing view
     captureSession.stopRunning()
   }
   
@@ -33,19 +33,25 @@ class CameraViewController: UIViewController {
       print("Error: no video devices available")
       return
     }
+    
+    //Verify if the user authorized camera use
     guard let videoInput = try? AVCaptureDeviceInput(device: captureDevice) else {
       print("Error: could not create AVCaptureDeviceInput")
       return
     }
+    
     if captureSession.canAddInput(videoInput) {
       captureSession.addInput(videoInput)
     }
     
+    //Get camera view
     let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
     previewLayer.videoGravity = AVLayerVideoGravity.resizeAspect
     previewLayer.connection?.videoOrientation = .portrait
+    //Shoow camera view in liveCameraView
     liveCameraView.layer.addSublayer(previewLayer)
     previewLayer.frame = liveCameraView.bounds
+    //Start capturing data
     captureSession.startRunning()
   }
   
