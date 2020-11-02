@@ -47,9 +47,9 @@ class CameraViewController: UIViewController {
         print(error.localizedDescription)
       }
     }
-    
   }
    
+  // Show in UIView camera input with settings
   func setUpCameraView(cameraSessionSettings session: AVCaptureSession) {
     
     self.captureSession = session
@@ -64,7 +64,7 @@ class CameraViewController: UIViewController {
     captureSession.startRunning()
   }
   
-  // This methos returns true if all camera configurations are done successfully
+  // Returns AVCaptureSession if all camera configurations are done successfully
   func setupCameraSessionSettings() throws -> AVCaptureSession {
     
     //Verify if the user has a working camera
