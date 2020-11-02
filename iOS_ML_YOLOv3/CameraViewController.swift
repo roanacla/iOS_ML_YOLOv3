@@ -7,6 +7,7 @@
 
 import UIKit
 import AVFoundation
+import Vision
 
 enum CameraSessionError: Error {
   case error
@@ -16,15 +17,56 @@ class CameraViewController: UIViewController {
   //MARK: - IBOutlets
   @IBOutlet weak var liveCameraView: UIView!
   
+  
   //MARK: - Properties
-//  let captureSession = AVCaptureSession()
   var captureSession: AVCaptureSession!
   let setupCameraQueue = DispatchQueue(label: "com.alquimia.setupCameraQueue")
   let videoOutput = AVCaptureVideoDataOutput()
+  // Pixel Buffer Object
+  var currentBuffer: CVPixelBuffer?
+  // Load YOLOv3 model and configure settings
+  lazy var visionModel: VNCoreMLModel? = {
+    do {
+      guard let modelURL = Bundle.main.url(forResource: "YOLOv3", withExtension: "mlmodelc") else {
+        // return nil if model is missing
+        return nil
+      }
+      let visionModel = try VNCoreMLModel(for: MLModel(contentsOf: modelURL))
+
+      if #available(iOS 13.0, *) {
+        visionModel.inputImageFeatureName = "image"
+        visionModel.featureProvider = try MLDictionaryFeatureProvider(dictionary: [
+          // set intersection over unit threshold
+          "iouThreshold": MLFeatureValue(double: 0.45),
+          // set confidence threshold
+          "confidenceThreshold": MLFeatureValue(double: 0.25),
+        ])
+      }
+
+      return visionModel
+    } catch {
+      fatalError("Failed to create VNCoreMLModel: \(error)")
+    }
+  }()
+  // Set vision Analysis Request Object
+  lazy var visionAnalysisRequest: VNCoreMLRequest? = {
+    guard let visionModel = visionModel else { return nil }
+    let request = VNCoreMLRequest(model: visionModel, completionHandler: {
+      [weak self] request, error in
+      self?.processObservations(for: request, error: error)
+    })
+    
+    request.imageCropAndScaleOption = .scaleFill
+    return request
+  }()
+  var boundingBoxViews = [BoundingBoxView]()
+  public var frameInterval = 1
+  var seenFrames = 0
   
   //MARK: - View Life Cycle
   override func viewDidLoad() {
     super.viewDidLoad()
+    self.setUpBoundingBoxViews()
     self.startVideoCamera()
   }
   
@@ -39,7 +81,7 @@ class CameraViewController: UIViewController {
     //Configure Camera before lunching
     self.setupCameraQueue.async {
       do {
-        let cameraSessionSettings  = try self.setupCameraSessionSettings()
+        let cameraSessionSettings  = try self.getCameraSessionSettings()
         DispatchQueue.main.async {
           self.setUpCameraView(cameraSessionSettings: cameraSessionSettings)
         }
@@ -60,12 +102,17 @@ class CameraViewController: UIViewController {
     //Shoow camera view in liveCameraView
     liveCameraView.layer.addSublayer(previewLayer)
     previewLayer.frame = liveCameraView.bounds
+    
+    for box in self.boundingBoxViews {
+      box.addToLayer(self.liveCameraView.layer)
+    }
+    
     //Start capturing data
     captureSession.startRunning()
   }
   
   // Returns AVCaptureSession if all camera configurations are done successfully
-  func setupCameraSessionSettings() throws -> AVCaptureSession {
+  func getCameraSessionSettings() throws -> AVCaptureSession {
     
     //Verify if the user has a working camera
     guard let captureDevice = AVCaptureDevice.default(for: AVMediaType.video) else {
@@ -118,8 +165,81 @@ class CameraViewController: UIViewController {
     return captureSession
   }
   
+  func predict(sampleBuffer: CMSampleBuffer) {
+    if currentBuffer == nil, let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
+      currentBuffer = pixelBuffer
+
+      // Get additional info from the camera.
+      var options: [VNImageOption : Any] = [:]
+      if let cameraIntrinsicMatrix = CMGetAttachment(sampleBuffer, key: kCMSampleBufferAttachmentKey_CameraIntrinsicMatrix, attachmentModeOut: nil) {
+        options[.cameraIntrinsics] = cameraIntrinsicMatrix
+      }
+
+      let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .up, options: options)
+      do {
+        guard let visionAnalysisRequest = self.visionAnalysisRequest else { return }
+        try handler.perform([visionAnalysisRequest])
+      } catch {
+        print("Failed to perform Vision request: \(error)")
+      }
+      currentBuffer = nil
+    }
+  }
+  
+  func processObservations(for request: VNRequest, error: Error?) {
+    DispatchQueue.main.async {
+      if let results = request.results as? [VNRecognizedObjectObservation] {
+        self.show(predictions: results)
+      } else {
+        self.show(predictions: [])
+      }
+    }
+  }
+  
+  func show(predictions: [VNRecognizedObjectObservation]) {
+    for i in 0..<boundingBoxViews.count {
+      if i < predictions.count {
+        let prediction = predictions[i]
+        let width = view.bounds.width
+        let height = width * 16 / 9
+        let offsetY = (view.bounds.height - height) / 2
+        let scale = CGAffineTransform.identity.scaledBy(x: width, y: height)
+        let transform = CGAffineTransform(scaleX: 1, y: -1).translatedBy(x: 0, y: -height - offsetY)
+        let rect = prediction.boundingBox.applying(scale).applying(transform)
+
+        // The labels array is a list of VNClassificationObservation objects,
+        // with the highest scoring class first in the list.
+        let bestClass = prediction.labels[0].identifier
+        let confidence = prediction.labels[0].confidence
+
+        // Show the bounding box.
+        let label = String(format: "%@ %.1f", bestClass, confidence * 100)
+        let color = UIColor.gray
+        boundingBoxViews[i].show(frame: rect, label: label, color: color)
+      } else {
+        boundingBoxViews[i].hide()
+      }
+    }
+  }
+  
+  func setUpBoundingBoxViews() {
+    for _ in 0..<10 {
+      boundingBoxViews.append(BoundingBoxView())
+    }
+  }
+  
 }
 
 extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
-  
+  public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+    self.seenFrames += 1
+    if self.seenFrames >= self.frameInterval {
+      self.seenFrames = 0
+      self.predict(sampleBuffer: sampleBuffer)
+    }
+  }
+
+  public func captureOutput(_ output: AVCaptureOutput, didDrop sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+    //print("dropped frame")
+  }
 }

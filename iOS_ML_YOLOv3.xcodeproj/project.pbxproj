@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		DB6AFEF7254FA9740032411D /* YOLOv3.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = DB6AFEF6254FA9740032411D /* YOLOv3.mlmodel */; };
+		DB6AFEFC254FB8FE0032411D /* BoundingBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6AFEFB254FB8FE0032411D /* BoundingBoxView.swift */; };
 		DBB13996254F58E60097CCBE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB13995254F58E60097CCBE /* AppDelegate.swift */; };
 		DBB13998254F58E60097CCBE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB13997254F58E60097CCBE /* SceneDelegate.swift */; };
 		DBB1399D254F58E60097CCBE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DBB1399B254F58E60097CCBE /* Main.storyboard */; };
@@ -39,6 +40,7 @@
 
 /* Begin PBXFileReference section */
 		DB6AFEF6254FA9740032411D /* YOLOv3.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = YOLOv3.mlmodel; sourceTree = "<group>"; };
+		DB6AFEFB254FB8FE0032411D /* BoundingBoxView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoundingBoxView.swift; sourceTree = "<group>"; };
 		DBB13992254F58E60097CCBE /* iOS_ML_YOLOv3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOS_ML_YOLOv3.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBB13995254F58E60097CCBE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DBB13997254F58E60097CCBE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -110,6 +112,7 @@
 				DBB139D1254F5A5E0097CCBE /* SnapsTableViewController.swift */,
 				DBB1399B254F58E60097CCBE /* Main.storyboard */,
 				DBB139D6254F5E140097CCBE /* CameraViewController.swift */,
+				DB6AFEFB254FB8FE0032411D /* BoundingBoxView.swift */,
 				DBB139A1254F58E80097CCBE /* Assets.xcassets */,
 				DBB139A3254F58E80097CCBE /* LaunchScreen.storyboard */,
 				DB6AFEF6254FA9740032411D /* YOLOv3.mlmodel */,
@@ -268,6 +271,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DB6AFEF7254FA9740032411D /* YOLOv3.mlmodel in Sources */,
+				DB6AFEFC254FB8FE0032411D /* BoundingBoxView.swift in Sources */,
 				DBB139A0254F58E60097CCBE /* iOS_ML_YOLOv3.xcdatamodeld in Sources */,
 				DBB139D7254F5E140097CCBE /* CameraViewController.swift in Sources */,
 				DBB139D2254F5A5E0097CCBE /* SnapsTableViewController.swift in Sources */,
