@@ -8,6 +8,8 @@
 import UIKit
 import AVFoundation
 import Vision
+import VideoToolbox
+
 
 enum CameraSessionError: Error {
   case error
@@ -16,6 +18,7 @@ class CameraViewController: UIViewController {
 
   //MARK: - IBOutlets
   @IBOutlet weak var liveCameraView: UIView!
+  @IBOutlet weak var image: UIImageView!
   
   
   //MARK: - Properties
@@ -62,6 +65,7 @@ class CameraViewController: UIViewController {
   var boundingBoxViews = [BoundingBoxView]()
   public var frameInterval = 1
   var seenFrames = 0
+  var predictions: [VNRecognizedObjectObservation] = []
   
   //MARK: - View Life Cycle
   override func viewDidLoad() {
@@ -75,7 +79,34 @@ class CameraViewController: UIViewController {
     captureSession.stopRunning()
   }
   
+  //MARK: - IBActions
+  @IBAction func snapObjects(_ sender: Any) {
+    
+    for prediction in predictions {
+      let bestClass = prediction.labels[0].identifier
+      let confidence = prediction.labels[0].confidence
+      print(bestClass + " \(confidence)")
+    }
+    
+    var cgImage: CGImage?
+    VTCreateCGImageFromCVPixelBuffer(currentBuffer!, options: nil, imageOut: &cgImage)
+    guard let imagecg = cgImage else {
+      return
+    }
+    image.image = UIImage(cgImage: imagecg)
+    
+  }
+  
+  
   //MARK: - View Functions
+  //0
+  func setUpBoundingBoxViews() {
+    for _ in 0..<10 {
+      boundingBoxViews.append(BoundingBoxView())
+    }
+  }
+  
+  //1
   func startVideoCamera() {
     
     //Configure Camera before lunching
@@ -91,27 +122,8 @@ class CameraViewController: UIViewController {
     }
   }
    
-  // Show in UIView camera input with settings
-  func setUpCameraView(cameraSessionSettings session: AVCaptureSession) {
-    
-    self.captureSession = session
-    // Get camera view
-    let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-    previewLayer.videoGravity = AVLayerVideoGravity.resizeAspect
-    previewLayer.connection?.videoOrientation = .portrait
-    //Shoow camera view in liveCameraView
-    liveCameraView.layer.addSublayer(previewLayer)
-    previewLayer.frame = liveCameraView.bounds
-    
-    for box in self.boundingBoxViews {
-      box.addToLayer(self.liveCameraView.layer)
-    }
-    
-    //Start capturing data
-    captureSession.startRunning()
-  }
-  
   // Returns AVCaptureSession if all camera configurations are done successfully
+  //2
   func getCameraSessionSettings() throws -> AVCaptureSession {
     
     //Verify if the user has a working camera
@@ -134,7 +146,7 @@ class CameraViewController: UIViewController {
     
     // Define the input camera resulution
     captureSession.sessionPreset = .hd1280x720
-//    captureSession.sessionPreset = .vga640x480
+    //    captureSession.sessionPreset = .vga640x480
     
     // Difine how the camera is going to be used. In this case video
     if captureSession.canAddInput(videoInput) {
@@ -144,7 +156,7 @@ class CameraViewController: UIViewController {
     let settings: [String : Any] = [
       kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32BGRA)
     ]
-   
+    
     // Define video settings
     self.videoOutput.videoSettings = settings
     self.videoOutput.alwaysDiscardsLateVideoFrames = true
@@ -165,6 +177,28 @@ class CameraViewController: UIViewController {
     return captureSession
   }
   
+  // Show in UIView camera input with settings
+  //3
+  func setUpCameraView(cameraSessionSettings session: AVCaptureSession) {
+    
+    self.captureSession = session
+    // Get camera view
+    let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+    previewLayer.videoGravity = AVLayerVideoGravity.resizeAspect
+    previewLayer.connection?.videoOrientation = .portrait
+    //Shoow camera view in liveCameraView
+    liveCameraView.layer.addSublayer(previewLayer)
+    previewLayer.frame = liveCameraView.bounds
+    
+    for box in self.boundingBoxViews {
+      box.addToLayer(self.liveCameraView.layer)
+    }
+    
+    //Start capturing data
+    captureSession.startRunning()
+  }
+  
+  //5
   func predict(sampleBuffer: CMSampleBuffer) {
     if currentBuffer == nil, let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
       currentBuffer = pixelBuffer
@@ -186,6 +220,7 @@ class CameraViewController: UIViewController {
     }
   }
   
+  //6
   func processObservations(for request: VNRequest, error: Error?) {
     DispatchQueue.main.async {
       if let results = request.results as? [VNRecognizedObjectObservation] {
@@ -196,7 +231,9 @@ class CameraViewController: UIViewController {
     }
   }
   
+  //7
   func show(predictions: [VNRecognizedObjectObservation]) {
+    self.predictions = predictions
     for i in 0..<boundingBoxViews.count {
       if i < predictions.count {
         let prediction = predictions[i]
@@ -222,14 +259,10 @@ class CameraViewController: UIViewController {
     }
   }
   
-  func setUpBoundingBoxViews() {
-    for _ in 0..<10 {
-      boundingBoxViews.append(BoundingBoxView())
-    }
-  }
-  
 }
 
+// MARK: - Video Output Delegate
+//4
 extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
   public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
     self.seenFrames += 1
