@@ -9,7 +9,7 @@ import UIKit
 import AVFoundation
 import Vision
 import VideoToolbox
-
+import CoreData
 
 enum CameraSessionError: Error {
   case error
@@ -22,6 +22,7 @@ class CameraViewController: UIViewController {
   
   
   //MARK: - Properties
+  var context: NSManagedObjectContext?
   var captureSession: AVCaptureSession!
   let setupCameraQueue = DispatchQueue(label: "com.alquimia.setupCameraQueue")
   let videoOutput = AVCaptureVideoDataOutput()
@@ -94,6 +95,24 @@ class CameraViewController: UIViewController {
       return
     }
     image.image = UIImage(cgImage: imagecg)
+    
+    guard let context = self.context else { return }
+    let snap = Snap(context: context)
+    snap.snapID = UUID()
+    snap.photo = image.image?.pngData()
+    for prediction in predictions {
+      let objectInSnap = ObjectInSnap(context: context)
+      objectInSnap.name = prediction.labels[0].identifier
+      objectInSnap.confidence = Double(prediction.labels[0].confidence)
+      snap.addToObjects(objectInSnap)
+    }
+    
+    do {
+      try context.save()
+      dismiss(animated: true, completion: nil)
+    } catch {
+      fatalError("Core Data Save error")
+    }
     
   }
   

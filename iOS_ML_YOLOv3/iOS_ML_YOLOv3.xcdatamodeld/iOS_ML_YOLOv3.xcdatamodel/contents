@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1" systemVersion="11A491" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="false" userDefinedModelVersionIdentifier="">
-    <elements/>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17192" systemVersion="19H2" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="ObjectInSnap" representedClassName="ObjectInSnap" syncable="YES" codeGenerationType="class">
+        <attribute name="confidence" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="Snap" representedClassName="Snap" syncable="YES" codeGenerationType="class">
+        <attribute name="photo" optional="YES" attributeType="Binary"/>
+        <attribute name="snapID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="objects" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ObjectInSnap"/>
+    </entity>
+    <elements>
+        <element name="Snap" positionX="-63" positionY="-18" width="128" height="88"/>
+        <element name="ObjectInSnap" positionX="-251.8359375" positionY="-9.9453125" width="128" height="73"/>
+    </elements>
 </model>
