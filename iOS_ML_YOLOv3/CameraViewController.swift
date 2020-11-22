@@ -256,9 +256,9 @@ class CameraViewController: UIViewController {
     for i in 0..<boundingBoxViews.count {
       if i < predictions.count {
         let prediction = predictions[i]
-        let width = view.bounds.width
+        let width = liveCameraView.bounds.width
         let height = width * 16 / 9
-        let offsetY = (view.bounds.height - height) / 2
+        let offsetY = (liveCameraView.bounds.height - height) / 2
         let scale = CGAffineTransform.identity.scaledBy(x: width, y: height)
         let transform = CGAffineTransform(scaleX: 1, y: -1).translatedBy(x: 0, y: -height - offsetY)
         let rect = prediction.boundingBox.applying(scale).applying(transform)
