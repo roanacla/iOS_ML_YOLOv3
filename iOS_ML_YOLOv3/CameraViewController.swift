@@ -19,6 +19,8 @@ class CameraViewController: UIViewController {
   //MARK: - IBOutlets
   @IBOutlet weak var liveCameraView: UIView!
   @IBOutlet weak var image: UIImageView!
+  @IBOutlet weak var confidenceLabel: UILabel!
+  @IBOutlet weak var iouLabel: UILabel!
   
   
   //MARK: - Properties
@@ -29,6 +31,9 @@ class CameraViewController: UIViewController {
   // Pixel Buffer Object
   var currentBuffer: CVPixelBuffer?
   // Load YOLOv3 model and configure settings
+  var currentConfidence: Double = 0.25
+  var currentIoUThreshold: Double = 0.45
+  
   lazy var visionModel: VNCoreMLModel? = {
     do {
       guard let modelURL = Bundle.main.url(forResource: "YOLOv3", withExtension: "mlmodelc") else {
@@ -41,9 +46,9 @@ class CameraViewController: UIViewController {
         visionModel.inputImageFeatureName = "image"
         visionModel.featureProvider = try MLDictionaryFeatureProvider(dictionary: [
           // set intersection over unit threshold
-          "iouThreshold": MLFeatureValue(double: 0.45),
+          "iouThreshold": MLFeatureValue(double: currentIoUThreshold),
           // set confidence threshold
-          "confidenceThreshold": MLFeatureValue(double: 0.25),
+          "confidenceThreshold": MLFeatureValue(double: currentConfidence),
         ])
       }
 
@@ -116,6 +121,15 @@ class CameraViewController: UIViewController {
     
   }
   
+  @IBAction func setConfidence(_ sender: UISlider) {
+    confidenceLabel.text = String(format: "%.2f", sender.value)
+    currentConfidence = Double(sender.value)
+  }
+  
+  @IBAction func setIoUThreshold(_ sender: UISlider) {
+    iouLabel.text = String(format: "%.2f", sender.value)
+    currentIoUThreshold = Double(sender.value)
+  }
   
   //MARK: - View Functions
   //0

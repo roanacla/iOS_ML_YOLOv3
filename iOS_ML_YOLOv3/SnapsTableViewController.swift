@@ -108,6 +108,13 @@ extension SnapsTableViewController {
     let cell = tableView.dequeueReusableCell(withIdentifier: "SnapCell", for: indexPath)
     let snap = fetchedResultsController.object(at: indexPath)
     cell.textLabel?.text = "\(snap.objects?.count ?? 0) objects found"
+    var detail = ""
+    if let objects = snap.objects as? Set<ObjectInSnap> {
+      for object in objects {
+        detail += "\(object.name ?? ""): \(String(format:"%.2f", object.confidence)) \n"
+      }
+      cell.detailTextLabel?.text = detail
+    }
     if let photo = snap.photo {
       cell.imageView?.image = UIImage(data: photo)
     }
